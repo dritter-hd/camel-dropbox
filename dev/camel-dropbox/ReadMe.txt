@@ -10,3 +10,7 @@ For more help see the Apache Camel documentation:
 
     http://camel.apache.org/writing-components.html
     
+For more information on the Dropbox SDK see documentation:
+    
+    https://www.dropbox.com/developers/core/start/java
+    
