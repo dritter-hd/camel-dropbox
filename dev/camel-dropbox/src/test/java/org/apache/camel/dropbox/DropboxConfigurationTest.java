@@ -1,6 +1,8 @@
 package org.apache.camel.dropbox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,7 @@ public class DropboxConfigurationTest {
     public void testGetKey_notNull() throws Exception {
         assertNotNull(this.config.getByKey(DropboxConfiguration.APP_KEY));
         assertNotNull(this.config.getByKey(DropboxConfiguration.APP_SECRET));
+        assertNotNull(this.config.getByKey(DropboxConfiguration.TOKEN));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -42,7 +45,7 @@ public class DropboxConfigurationTest {
 
     @Test
     public void testStoreAndRemove_notNull() throws Exception {
-        final String key = "token";
+        final String key = "dummy";
         final String value = "myToken";
 
         this.config.store(key, value);

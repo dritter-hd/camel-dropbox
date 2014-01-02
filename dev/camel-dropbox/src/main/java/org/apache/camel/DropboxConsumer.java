@@ -16,11 +16,10 @@
  */
 package org.apache.camel;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
+import org.apache.camel.DropboxOperationImpl.DropboxOperations;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
 import org.apache.camel.impl.ScheduledPollConsumer;
@@ -28,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
 
 /**
@@ -41,11 +39,15 @@ public class DropboxConsumer extends ScheduledPollConsumer {
 
     private DbxClient client;
 
+    private DropboxOperationImpl operation;
+
     public DropboxConsumer(final DropboxEndpoint endpoint, final Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
 
         this.setupDropboxClient();
+        
+        this.operation = DropboxOperationImpl.create(this.endpoint, this.client);
     }
 
     private void setupDropboxClient() {
@@ -68,22 +70,16 @@ public class DropboxConsumer extends ScheduledPollConsumer {
     protected int poll() throws Exception {
         final Exchange exchange = endpoint.createExchange();
 
-        if ("get".equals(this.endpoint.getMethod())) {
-            final String path = this.endpoint.getPath();
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            client.getFile(path, null, baos);
-
-            final String[] pathArray = path.split("/");
-            exchange.getIn().setHeader(Exchange.FILE_NAME, pathArray[pathArray.length - 1]);
-            exchange.getIn().setBody(baos);
-        } else if ("search".equals(this.endpoint.getMethod())) {
-            final List<DbxEntry> listOfFilesFolders = client.searchFileAndFolderNames(this.endpoint.getPath(), this.endpoint.getQuery());
-            exchange.getIn().setHeader("searchResult", "List<DbxEntry>");
-            exchange.getIn().setBody(listOfFilesFolders);
-        } else {
-            throw new UnsupportedOperationException("Method " + this.endpoint.getMethod() + " unknown.");
+        final String method = this.endpoint.getMethod();
+        final DropboxOperations operationName = DropboxOperations.valueOf(("consumer" + "_" + method).toUpperCase());
+        
+        logger.debug("get operation for " + operationName);
+        final DropboxOperation producerOperation = operation.getOperation(operationName);
+        if (null == producerOperation) {
+            throw new UnsupportedOperationException("Producer operation " + method + " not supported.");
         }
-
+        producerOperation.execute(exchange);
+        
         try {
             // send message to next processor in the route
             getProcessor().process(exchange);

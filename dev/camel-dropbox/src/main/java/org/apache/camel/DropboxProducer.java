@@ -16,13 +16,10 @@
  */
 package org.apache.camel;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
+import org.apache.camel.DropboxOperationImpl.DropboxOperations;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultProducer;
@@ -30,10 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxEntry;
-import com.dropbox.core.DbxEntry.File;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxWriteMode;
 
 /**
  * The www.dropbox.com producer.
@@ -51,33 +45,14 @@ public class DropboxProducer extends DefaultProducer {
     }
 
     public void process(final Exchange exchange) throws Exception {
-        if ("add".equals(this.endpoint.getMethod())) {
-            final ByteArrayOutputStream baos = exchange.getIn().getBody(ByteArrayOutputStream.class);
-            final byte[] byteArray = baos.toByteArray();
-            final ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
-            final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
-            exchange.getIn().setBody(this.upload(byteArray.length, bais, fileName));
-        } else if ("get".equals(this.endpoint.getMethod())) {
-            final String searchHeader = exchange.getIn().getHeader("searchResult", String.class);
-            
-            if (null == searchHeader) {
-                throw new IllegalArgumentException();
-            }
-            
-            final List<DbxEntry> body = (List<DbxEntry>) exchange.getIn().getBody();
-            final DbxEntry dbxEntry = body.get(0);
-            this.endpoint.setPath(dbxEntry.path);
-            final String path = dbxEntry.path;
-            
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            client.getFile(path, null, baos);
-
-            final String[] pathArray = path.split("/");
-            exchange.getIn().setHeader(Exchange.FILE_NAME, pathArray[pathArray.length - 1]);
-            exchange.getIn().setBody(baos);
-        } else {
-            throw new UnsupportedOperationException("Method " + this.endpoint.getMethod() + " unknown.");
+        final String method = this.endpoint.getMethod();
+        
+        final DropboxOperationImpl operation = DropboxOperationImpl.create(this.endpoint, this.client);
+        final DropboxOperation producerOperation = operation.getOperation(DropboxOperations.valueOf(("producer" + "_" + method).toUpperCase()));
+        if (null == producerOperation) {
+            throw new UnsupportedOperationException("Producer operation " + method + " not supported.");
         }
+        producerOperation.execute(exchange);
     }
 
     private void setupDropboxClient() {
@@ -94,10 +69,5 @@ public class DropboxProducer extends DefaultProducer {
         } catch (final DbxException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    public File upload(final long length, final InputStream is, final String fileName) throws DbxException, IOException {
-        final String path = this.endpoint.getPath();
-        return client.uploadFile(path + "/" + fileName, DbxWriteMode.add(), length, is);
     }
 }

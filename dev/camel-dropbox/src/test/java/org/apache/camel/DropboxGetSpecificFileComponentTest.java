@@ -32,7 +32,6 @@ public class DropboxGetSpecificFileComponentTest extends CamelTestSupport {
     private String appSecret;
     private String accessToken;
 
-    @Ignore
     @Test
     public void testDropbox() throws Exception {
         final MockEndpoint mock = getMockEndpoint("mock:result");

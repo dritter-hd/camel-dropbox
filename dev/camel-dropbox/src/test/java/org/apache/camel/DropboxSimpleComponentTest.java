@@ -22,9 +22,9 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class DropboxSimpleComponentTest extends CamelTestSupport {
 
-    @Ignore
     @Test
     public void testDropbox() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:result");
