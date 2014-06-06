@@ -16,15 +16,15 @@
  */
 package org.apache.camel;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.dropbox.DropboxConfiguration;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 @Ignore
 public class DropboxSearchFileComponentTest extends CamelTestSupport {
@@ -53,7 +53,7 @@ public class DropboxSearchFileComponentTest extends CamelTestSupport {
     }
 
     private void setupConfiguration() throws FileNotFoundException, IOException {
-        final DropboxConfiguration configuration = DropboxConfiguration.create(DropboxConfiguration.SRC_TEST_RESOURCES,
+        final DropboxConfiguration configuration = DropboxConfiguration.create(TestUtil.TEST_DATA_FOLDER,
                 DropboxConfiguration.DEFAULT_RESOURCES);
         appKey = configuration.getByKey(DropboxConfiguration.APP_KEY);
         appSecret = configuration.getByKey(DropboxConfiguration.APP_SECRET);

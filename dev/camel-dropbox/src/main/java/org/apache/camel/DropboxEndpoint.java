@@ -16,18 +16,17 @@
  */
 package org.apache.camel;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Represents a www.dropbox.com endpoint.
@@ -44,6 +43,9 @@ public class DropboxEndpoint extends DefaultEndpoint {
 
     private String method;
     private String query;
+
+    private String proxyHost = System.getProperty("http.proxyHost");
+    private int proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "0"));
 
     private DbxClient client;
 
@@ -112,7 +114,7 @@ public class DropboxEndpoint extends DefaultEndpoint {
     protected DbxClient getDropboxClient() {
         if (null != client) {
             final DropboxAppConfiguration appConfig = new DropboxAppConfiguration(this.getAppKey(), this.getAppSecret(),
-                    this.getAccessToken());
+                    this.getAccessToken(), this.getProxyHost(), this.getProxyPort());
             final DropboxApp app = DropboxApp.create(appConfig);
             try {
                 client = app.connect();
@@ -142,5 +144,21 @@ public class DropboxEndpoint extends DefaultEndpoint {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public int getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
     }
 }

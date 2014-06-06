@@ -16,9 +16,8 @@
  */
 package org.apache.camel;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 import org.apache.camel.DropboxOperationImpl.DropboxOperations;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
@@ -26,8 +25,8 @@ import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * The www.dropbox.com producer.
@@ -57,7 +56,7 @@ public class DropboxProducer extends DefaultProducer {
 
     private void setupDropboxClient() {
         final DropboxAppConfiguration appConfig = new DropboxAppConfiguration(this.endpoint.getAppKey(), this.endpoint.getAppSecret(),
-                this.endpoint.getAccessToken());
+                this.endpoint.getAccessToken(), this.endpoint.getProxyHost(), this.endpoint.getProxyPort());
         final DropboxApp app = DropboxApp.create(appConfig);
         try {
             client = app.connect();

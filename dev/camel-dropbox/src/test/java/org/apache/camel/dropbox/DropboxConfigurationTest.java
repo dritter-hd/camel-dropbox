@@ -1,18 +1,17 @@
 package org.apache.camel.dropbox;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
+import org.apache.camel.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class DropboxConfigurationTest {
     private DropboxConfiguration config;
 
     @Before
     public void setup() throws Exception {
-        this.config = DropboxConfiguration.create(DropboxConfiguration.SRC_TEST_RESOURCES, DropboxConfiguration.DEFAULT_RESOURCES);
+        this.config = DropboxConfiguration.create(TestUtil.TEST_DATA_FOLDER, DropboxConfiguration.DEFAULT_RESOURCES);
         assertNotNull(this.config);
     }
 

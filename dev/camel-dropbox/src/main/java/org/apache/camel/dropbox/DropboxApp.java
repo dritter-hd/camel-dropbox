@@ -1,20 +1,17 @@
 package org.apache.camel.dropbox;
 
+import com.dropbox.core.*;
+import com.dropbox.core.http.StandardHttpRequestor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Locale;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.dropbox.core.DbxAppInfo;
-import com.dropbox.core.DbxAuthFinish;
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxWebAuthNoRedirect;
 
 public class DropboxApp {
     private Logger logger = LoggerFactory.getLogger(DropboxApp.class);
@@ -24,7 +21,12 @@ public class DropboxApp {
 
     private DropboxApp(final DropboxAppConfiguration appConfig) {
         this.appConfig = appConfig;
-        config = new DbxRequestConfig("JavaTutorial/1.0", Locale.getDefault().toString());
+
+        if (appConfig.getProxyHost() != null && !appConfig.getProxyHost().isEmpty()) {
+            config = new DbxRequestConfig("JavaTutorial/1.0", Locale.getDefault().toString(), new StandardHttpRequestor(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(appConfig.getProxyHost(), appConfig.getProxyPort()))));
+        } else {
+            config = new DbxRequestConfig("JavaTutorial/1.0", Locale.getDefault().toString());
+        }
     }
 
     public static DropboxApp create(final DropboxAppConfiguration appConfig) {

@@ -1,15 +1,16 @@
 package org.apache.camel.dropbox;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DropboxConfiguration {
+
     public static final String SRC_TEST_RESOURCES = "src/test/resources/";
     public static final String SRC_MAIN_RESOURCES = "src/main/resources/";
     public static final String DEFAULT_RESOURCES = "dropbox.properties";
