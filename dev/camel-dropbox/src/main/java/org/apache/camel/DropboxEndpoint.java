@@ -20,9 +20,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.camel.configuration.ProxyConfiguration;
+import org.apache.camel.configuration.SecurityConfiguration;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,7 @@ import com.dropbox.core.DbxException;
 /**
  * Represents a www.dropbox.com endpoint.
  */
+@UriEndpoint(scheme = "dropbox")
 public class DropboxEndpoint extends DefaultEndpoint {
     private DropboxComponent component;
 
@@ -41,17 +45,13 @@ public class DropboxEndpoint extends DefaultEndpoint {
     @UriParam
     private String path;
     @UriParam
-    private String appKey;
-    @UriParam
-    private String appSecret;
-    @UriParam
-    private String accessToken;
-
-    @UriParam
     private String method;
     @UriParam
     private String query;
 
+    @UriParam
+    private SecurityConfiguration securityConfig = new SecurityConfiguration();
+    
     @UriParam
     private ProxyConfiguration proxyConfig = new ProxyConfiguration();
     
@@ -96,46 +96,27 @@ public class DropboxEndpoint extends DefaultEndpoint {
     }
 
     public String getAppKey() {
-        return appKey;
+        return securityConfig.getAppKey();
     }
 
     public void setAppKey(String appKey) {
-        this.appKey = appKey;
+        securityConfig.setAppKey(appKey);
     }
 
     public String getAppSecret() {
-        return appSecret;
+        return securityConfig.getAppSecret();
     }
 
     public void setAppSecret(String appSecret) {
-        this.appSecret = appSecret;
+        securityConfig.setAppSecret(appSecret);
     }
 
     public String getAccessToken() {
-        return accessToken;
+        return securityConfig.getAccessToken();
     }
 
     public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    protected DbxClient getDropboxClient() {
-        if (null != client) {
-            final DropboxAppConfiguration appConfig = new DropboxAppConfiguration(this.getAppKey(), this.getAppSecret(),
-                    this.getAccessToken(), this.getProxyHost(), this.getProxyPort());
-            final DropboxApp app = DropboxApp.create(appConfig);
-            try {
-                client = app.connect();
-                logger.debug("Client connected: " + client.getAccountInfo().displayName);
-            } catch (final FileNotFoundException e) {
-                throw new IllegalArgumentException(e);
-            } catch (final IOException e) {
-                throw new IllegalArgumentException(e);
-            } catch (final DbxException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-        return client;
+        securityConfig.setAccessToken(accessToken);
     }
 
     public String getMethod() {
@@ -168,5 +149,24 @@ public class DropboxEndpoint extends DefaultEndpoint {
 
     public void setProxyHost(String proxyHost) {
         proxyConfig.setProxyHost(proxyHost);
+    }
+    
+    protected DbxClient getDropboxClient() {
+        if (null != client) {
+            final DropboxAppConfiguration appConfig = new DropboxAppConfiguration(this.getAppKey(), this.getAppSecret(),
+                    this.getAccessToken(), this.getProxyHost(), this.getProxyPort());
+            final DropboxApp app = DropboxApp.create(appConfig);
+            try {
+                client = app.connect();
+                logger.debug("Client connected: " + client.getAccountInfo().displayName);
+            } catch (final FileNotFoundException e) {
+                throw new IllegalArgumentException(e);
+            } catch (final IOException e) {
+                throw new IllegalArgumentException(e);
+            } catch (final DbxException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        return client;
     }
 }
