@@ -16,17 +16,19 @@
  */
 package org.apache.camel;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
-import org.apache.camel.dropbox.DropboxApp;
-import org.apache.camel.dropbox.DropboxAppConfiguration;
-import org.apache.camel.impl.DefaultEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import org.apache.camel.dropbox.DropboxApp;
+import org.apache.camel.dropbox.DropboxAppConfiguration;
+import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.spi.UriParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 
 /**
  * Represents a www.dropbox.com endpoint.
@@ -36,17 +38,23 @@ public class DropboxEndpoint extends DefaultEndpoint {
 
     private transient Logger logger = LoggerFactory.getLogger(DropboxEndpoint.class);
 
+    @UriParam
     private String path;
+    @UriParam
     private String appKey;
+    @UriParam
     private String appSecret;
+    @UriParam
     private String accessToken;
 
+    @UriParam
     private String method;
+    @UriParam
     private String query;
 
-    private String proxyHost = System.getProperty("http.proxyHost");
-    private int proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "0"));
-
+    @UriParam
+    private ProxyConfiguration proxyConfig = new ProxyConfiguration();
+    
     private DbxClient client;
 
 
@@ -147,18 +155,18 @@ public class DropboxEndpoint extends DefaultEndpoint {
     }
 
     public int getProxyPort() {
-        return proxyPort;
+        return proxyConfig.getProxyPort();
     }
 
     public void setProxyPort(int proxyPort) {
-        this.proxyPort = proxyPort;
+        proxyConfig.setProxyPort(proxyPort);
     }
 
     public String getProxyHost() {
-        return proxyHost;
+        return proxyConfig.getProxyHost();
     }
 
     public void setProxyHost(String proxyHost) {
-        this.proxyHost = proxyHost;
+        proxyConfig.setProxyHost(proxyHost);
     }
 }
