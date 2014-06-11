@@ -24,7 +24,7 @@
 	<url>http://camel.apache.org/</url>
 
 	<properties>
-		<camel.version>2.12.3</camel.version>
+		<camel.version>2.13.0</camel.version>
 	</properties>
 
 	<dependencies>
