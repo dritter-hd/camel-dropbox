@@ -20,6 +20,7 @@ public class TestUtil {
         return clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
     }
 
+
     public static final String OUTPUT_FOLDER = TEST_DATA_FOLDER + FILE_SEPARATOR + "testout" + FILE_SEPARATOR;
 
     public static String path(String... file) {
