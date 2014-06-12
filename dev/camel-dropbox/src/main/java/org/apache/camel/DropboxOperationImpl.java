@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.camel.DropboxOperation.DropboxOperations;
+
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
@@ -15,27 +17,22 @@ import com.dropbox.core.DbxWriteMode;
 import com.dropbox.core.DbxEntry.File;
 
 public class DropboxOperationImpl {
-    public enum DropboxOperations {
-        CONSUMER_GET, CONSUMER_SEARCH, PRODUCER_GET, PRODUCER_ADD;
-    }
-
     private static final Map<DropboxOperations, DropboxOperation> operations = new HashMap<DropboxOperations, DropboxOperation>();
 
     private DropboxEndpoint endpoint;
     private DbxClient client;
 
-    
     private DropboxOperationImpl(final DropboxEndpoint endpoint, final DbxClient dbxClient) {
         this.endpoint = endpoint;
         this.client = dbxClient;
-        
+
         operations.put(DropboxOperations.PRODUCER_ADD, getProducerAdd());
         operations.put(DropboxOperations.PRODUCER_GET, getProducerGet());
-        
+
         operations.put(DropboxOperations.CONSUMER_GET, getConsumerGet());
         operations.put(DropboxOperations.CONSUMER_SEARCH, getConsumerSearch());
     }
-    
+
     public static DropboxOperationImpl create(final DropboxEndpoint endpoint, final DbxClient dbxClient) {
         return new DropboxOperationImpl(endpoint, dbxClient);
     }
@@ -63,8 +60,7 @@ public class DropboxOperationImpl {
         return new DropboxOperation() {
             @Override
             public void execute(final Exchange exchange) throws DbxException {
-                final List<DbxEntry> listOfFilesFolders = client
-                        .searchFileAndFolderNames(endpoint.getPath(), endpoint.getQuery());
+                final List<DbxEntry> listOfFilesFolders = client.searchFileAndFolderNames(endpoint.getPath(), endpoint.getQuery());
                 exchange.getIn().setHeader("searchResult", "List<DbxEntry>");
                 exchange.getIn().setBody(listOfFilesFolders);
             }
@@ -109,7 +105,7 @@ public class DropboxOperationImpl {
             }
         };
     }
-    
+
     public File upload(final long length, final InputStream is, final String fileName) throws DbxException, IOException {
         final String path = this.endpoint.getPath();
         return client.uploadFile(path + "/" + fileName, DbxWriteMode.add(), length, is);

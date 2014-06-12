@@ -16,22 +16,21 @@
  */
 package org.apache.camel;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.dropbox.DropboxConfiguration;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-@Ignore
 public class DropboxGetSpecificFileComponentTest extends CamelTestSupport {
     private String appKey;
     private String appSecret;
     private String accessToken;
-
+  
     @Test
     public void testDropbox() throws Exception {
         final MockEndpoint mock = getMockEndpoint("mock:result");
@@ -43,6 +42,8 @@ public class DropboxGetSpecificFileComponentTest extends CamelTestSupport {
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         this.setupConfiguration();
+        Assume.assumeNotNull(this.accessToken);
+
         return new RouteBuilder() {
             public void configure() {
                 from("dropbox://get?path=" + "/Public/ioio.txt" + "&appKey=" + appKey + "&appSecret=" + appSecret + "&accessToken=" + accessToken).to(

@@ -16,17 +16,18 @@
  */
 package org.apache.camel;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
-import org.apache.camel.DropboxOperationImpl.DropboxOperations;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.apache.camel.DropboxOperation.DropboxOperations;
 import org.apache.camel.dropbox.DropboxApp;
 import org.apache.camel.dropbox.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 
 /**
  * The www.dropbox.com producer.
