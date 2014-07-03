@@ -1,4 +1,4 @@
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.File;
 

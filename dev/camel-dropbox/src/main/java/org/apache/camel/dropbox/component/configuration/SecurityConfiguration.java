@@ -1,4 +1,4 @@
-package org.apache.camel.configuration;
+package org.apache.camel.dropbox.component.configuration;
 
 import org.apache.camel.spi.UriParam;
 

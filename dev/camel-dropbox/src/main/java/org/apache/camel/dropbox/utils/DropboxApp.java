@@ -1,4 +1,4 @@
-package org.apache.camel.dropbox;
+package org.apache.camel.dropbox.utils;
 
 import com.dropbox.core.*;
 import com.dropbox.core.http.StandardHttpRequestor;

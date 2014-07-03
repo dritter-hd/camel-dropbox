@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.dropbox.DropboxConfiguration;
+import org.apache.camel.dropbox.utils.DropboxConfiguration;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Assume;
 import org.junit.Test;
 
-public class DropboxSearchFileComponentTest extends CamelTestSupport {
+public class DropboxSearchAndGetFileComponentTest extends CamelTestSupport {
     private String appKey;
     private String appSecret;
     private String accessToken;
-   
+
     @Test
     public void testDropbox() throws Exception {
         final MockEndpoint mock = getMockEndpoint("mock:result");
@@ -47,8 +47,10 @@ public class DropboxSearchFileComponentTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
                 from(
-                        "dropbox://search?path=" + "/" + "&query=" + "compiler" + "&appKey=" + appKey + "&appSecret=" + appSecret
-                                + "&accessToken=" + accessToken).marshal().string().to("file:data/outbox").to("mock:result");
+                        "dropbox://search?path=" + "/Public" + "&query=" + "public" + "&appKey=" + appKey + "&appSecret=" + appSecret
+                                + "&accessToken=" + accessToken)
+                        .to("dropbox://get?" + "appKey=" + appKey + "&appSecret=" + appSecret + "&accessToken=" + accessToken)
+                        .to("file:data/outbox").to("mock:result");
             }
         };
     }

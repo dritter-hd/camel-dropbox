@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.util.Map;
 
+import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
 /**

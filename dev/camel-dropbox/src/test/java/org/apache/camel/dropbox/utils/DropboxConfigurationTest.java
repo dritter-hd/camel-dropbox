@@ -1,6 +1,7 @@
-package org.apache.camel.dropbox;
+package org.apache.camel.dropbox.utils;
 
-import org.apache.camel.TestUtil;
+import org.apache.camel.dropbox.component.TestUtil;
+import org.apache.camel.dropbox.utils.DropboxConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

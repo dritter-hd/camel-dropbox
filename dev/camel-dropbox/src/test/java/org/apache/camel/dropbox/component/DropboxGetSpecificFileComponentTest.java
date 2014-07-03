@@ -14,33 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.dropbox.utils.DropboxConfiguration;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 
-@Ignore
-public class DropboxSimpleComponentTest extends CamelTestSupport {
-
+public class DropboxGetSpecificFileComponentTest extends CamelTestSupport {
+    private String appKey;
+    private String appSecret;
+    private String accessToken;
+  
     @Test
     public void testDropbox() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
-        
+        final MockEndpoint mock = getMockEndpoint("mock:result");
+        mock.expectedMinimumMessageCount(1);
+
         assertMockEndpointsSatisfied();
     }
 
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
+        this.setupConfiguration();
+        Assume.assumeNotNull(this.accessToken);
+
         return new RouteBuilder() {
             public void configure() {
-                from("dropbox://foo")
-                  .to("dropbox://bar")
-                  .to("mock:result");
+                from("dropbox://get?path=" + "/Public/ioio.txt" + "&appKey=" + appKey + "&appSecret=" + appSecret + "&accessToken=" + accessToken).to(
+                        "file:data/outbox").to("mock:result");
             }
         };
+    }
+
+    private void setupConfiguration() throws FileNotFoundException, IOException {
+        final DropboxConfiguration configuration = DropboxConfiguration.create(TestUtil.TEST_DATA_FOLDER,
+                DropboxConfiguration.DEFAULT_RESOURCES);
+        appKey = configuration.getByKey(DropboxConfiguration.APP_KEY);
+        appSecret = configuration.getByKey(DropboxConfiguration.APP_SECRET);
+        accessToken = configuration.getByKey(DropboxConfiguration.TOKEN);
     }
 }

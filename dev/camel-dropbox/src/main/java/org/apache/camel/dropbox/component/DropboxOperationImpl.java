@@ -1,4 +1,4 @@
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.camel.DropboxOperation.DropboxOperations;
+import org.apache.camel.Exchange;
+import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;

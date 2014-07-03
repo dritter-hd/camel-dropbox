@@ -14,14 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.camel.DropboxOperation.DropboxOperations;
-import org.apache.camel.dropbox.DropboxApp;
-import org.apache.camel.dropbox.DropboxAppConfiguration;
+import org.apache.camel.Exchange;
+import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
+import org.apache.camel.dropbox.utils.DropboxApp;
+import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

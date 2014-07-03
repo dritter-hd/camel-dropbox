@@ -1,4 +1,4 @@
-package org.apache.camel.dropbox;
+package org.apache.camel.dropbox.utils;
 
 public class DropboxAppConfiguration {
 

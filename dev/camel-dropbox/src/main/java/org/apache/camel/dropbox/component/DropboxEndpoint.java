@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.apache.camel.configuration.ProxyConfiguration;
-import org.apache.camel.configuration.SecurityConfiguration;
-import org.apache.camel.dropbox.DropboxApp;
-import org.apache.camel.dropbox.DropboxAppConfiguration;
+import org.apache.camel.Consumer;
+import org.apache.camel.Processor;
+import org.apache.camel.Producer;
+import org.apache.camel.dropbox.component.configuration.ProxyConfiguration;
+import org.apache.camel.dropbox.component.configuration.SecurityConfiguration;
+import org.apache.camel.dropbox.utils.DropboxApp;
+import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;

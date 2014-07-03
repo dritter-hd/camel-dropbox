@@ -1,4 +1,4 @@
-package org.apache.camel.dropbox;
+package org.apache.camel.dropbox.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,8 @@
-package org.apache.camel;
+package org.apache.camel.dropbox.component;
 
 import java.io.IOException;
+
+import org.apache.camel.Exchange;
 
 import com.dropbox.core.DbxException;
 
