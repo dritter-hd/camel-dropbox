@@ -16,9 +16,8 @@
  */
 package org.apache.camel.dropbox.component;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
@@ -28,8 +27,8 @@ import org.apache.camel.impl.ScheduledPollConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * The dropbox.com consumer.
@@ -46,9 +45,14 @@ public class DropboxConsumer extends ScheduledPollConsumer {
     public DropboxConsumer(final DropboxEndpoint endpoint, final Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
 
         this.setupDropboxClient();
-        
+
         this.operation = DropboxOperationImpl.create(this.endpoint, this.client);
     }
 

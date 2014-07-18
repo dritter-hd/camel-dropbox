@@ -16,9 +16,8 @@
  */
 package org.apache.camel.dropbox.component;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 import org.apache.camel.Exchange;
 import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
 import org.apache.camel.dropbox.utils.DropboxApp;
@@ -27,8 +26,8 @@ import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * The www.dropbox.com producer.
@@ -41,6 +40,13 @@ public class DropboxProducer extends DefaultProducer {
     public DropboxProducer(DropboxEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
+
+
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
 
         this.setupDropboxClient();
     }

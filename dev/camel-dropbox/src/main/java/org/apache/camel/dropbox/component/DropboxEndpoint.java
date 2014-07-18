@@ -16,10 +16,8 @@
  */
 package org.apache.camel.dropbox.component;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
@@ -27,20 +25,21 @@ import org.apache.camel.dropbox.component.configuration.ProxyConfiguration;
 import org.apache.camel.dropbox.component.configuration.SecurityConfiguration;
 import org.apache.camel.dropbox.utils.DropboxApp;
 import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.impl.DefaultPollingEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Represents a www.dropbox.com endpoint.
  */
 @UriEndpoint(scheme = "dropbox")
-public class DropboxEndpoint extends DefaultEndpoint {
+public class DropboxEndpoint extends DefaultPollingEndpoint {
     private DropboxComponent component;
 
     private transient Logger logger = LoggerFactory.getLogger(DropboxEndpoint.class);
@@ -83,7 +82,9 @@ public class DropboxEndpoint extends DefaultEndpoint {
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        return new DropboxConsumer(this, processor);
+        final DropboxConsumer dropboxConsumer = new DropboxConsumer(this, processor);
+        configureConsumer(dropboxConsumer);
+        return dropboxConsumer;
     }
 
     public boolean isSingleton() {

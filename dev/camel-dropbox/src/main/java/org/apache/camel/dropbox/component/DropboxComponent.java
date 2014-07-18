@@ -16,15 +16,23 @@
  */
 package org.apache.camel.dropbox.component;
 
-import java.util.Map;
-
+import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.impl.UriEndpointComponent;
+
+import java.util.Map;
 
 /**
  * Represents the component that manages {@link DropboxEndpoint}.
  */
-public class DropboxComponent extends DefaultComponent {
+public class DropboxComponent extends UriEndpointComponent {
+    public DropboxComponent() {
+        super(DropboxEndpoint.class);
+    }
+
+    public DropboxComponent(CamelContext context) {
+        super(context, DropboxEndpoint.class);
+    }
     //final Logger logger = Logger.getLogger(DropboxComponent.class);
 
     protected Endpoint createEndpoint(final String uri, final String remaining, final Map<String, Object> parameters) throws Exception {
