@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * Represents a www.dropbox.com endpoint.
+ * Represents a www.dropbox.com Camel endpoint.
  */
 @UriEndpoint(scheme = "dropbox")
 public class DropboxEndpoint extends DefaultPollingEndpoint {
