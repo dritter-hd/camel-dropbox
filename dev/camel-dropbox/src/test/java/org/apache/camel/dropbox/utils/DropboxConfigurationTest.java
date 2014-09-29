@@ -28,9 +28,12 @@ public class DropboxConfigurationTest {
 
     @Test
     public void testGetKey_notNull() throws Exception {
-        assertNotNull(this.config.getByKey(DropboxConfiguration.APP_KEY));
-        assertNotNull(this.config.getByKey(DropboxConfiguration.APP_SECRET));
-        assertNotNull(this.config.getByKey(DropboxConfiguration.TOKEN));
+        assertNotNull("Property file dropbox.properties has no " + DropboxConfiguration.APP_KEY + ".",
+                this.config.getByKey(DropboxConfiguration.APP_KEY));
+        assertNotNull("Property file dropbox.properties has no " + DropboxConfiguration.APP_SECRET + ".",
+                this.config.getByKey(DropboxConfiguration.APP_SECRET));
+        assertNotNull("Property file dropbox.properties has no " + DropboxConfiguration.TOKEN + ".",
+                this.config.getByKey(DropboxConfiguration.TOKEN));
     }
 
     @Test(expected = IllegalArgumentException.class)
