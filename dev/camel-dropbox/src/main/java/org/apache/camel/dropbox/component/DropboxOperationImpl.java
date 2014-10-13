@@ -1,5 +1,13 @@
 package org.apache.camel.dropbox.component;
 
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
+import com.dropbox.core.DbxEntry.File;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxWriteMode;
+import org.apache.camel.Exchange;
+import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,17 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
-
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxEntry;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxWriteMode;
-import com.dropbox.core.DbxEntry.File;
-
 public class DropboxOperationImpl {
-    private static final Map<DropboxOperations, DropboxOperation> operations = new HashMap<DropboxOperations, DropboxOperation>();
+    private final Map<DropboxOperations, DropboxOperation> operations = new HashMap<DropboxOperations, DropboxOperation>();
 
     private DropboxEndpoint endpoint;
     private DbxClient client;

@@ -6,7 +6,15 @@ public class ProxyConfiguration {
     @UriParam
     private String proxyHost = System.getProperty("http.proxyHost");
     @UriParam
-    private int proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "0"));
+    private int proxyPort;
+
+    public ProxyConfiguration() {
+        final String property = System.getProperty("http.proxyPort", "0");
+        if (!property.isEmpty()) {
+            proxyPort = Integer.parseInt(property);
+        }
+    }
+
     public String getProxyHost() {
         return proxyHost;
     }
