@@ -1,2 +1,2 @@
 language: java
-script: "mvn -f dev/camel-dropbox/pom.xml install"
+script: "mvn -f dev/camel-dropbox/pom.xml clean install -DskipTests=true"
