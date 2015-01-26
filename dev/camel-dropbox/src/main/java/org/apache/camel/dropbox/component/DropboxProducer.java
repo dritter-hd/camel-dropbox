@@ -19,7 +19,7 @@ package org.apache.camel.dropbox.component;
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxException;
 import org.apache.camel.Exchange;
-import org.apache.camel.dropbox.component.DropboxOperation.DropboxOperations;
+import org.apache.camel.dropbox.component.DropboxConsumerOperation.DropboxOperations;
 import org.apache.camel.dropbox.utils.DropboxApp;
 import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultProducer;
@@ -41,7 +41,6 @@ public class DropboxProducer extends DefaultProducer {
         super(endpoint);
         this.endpoint = endpoint;
 
-
     }
 
     @Override
@@ -53,9 +52,10 @@ public class DropboxProducer extends DefaultProducer {
 
     public void process(final Exchange exchange) throws Exception {
         final String method = this.endpoint.getMethod();
-        
+
         final DropboxOperationImpl operation = DropboxOperationImpl.create(this.endpoint, this.client);
-        final DropboxOperation producerOperation = operation.getOperation(DropboxOperations.valueOf(("producer" + "_" + method).toUpperCase()));
+        final DropboxProducerOperation producerOperation = operation.getProducerOperation(DropboxOperations
+                .valueOf(("producer" + "_" + method).toUpperCase()));
         if (null == producerOperation) {
             throw new UnsupportedOperationException("Producer operation " + method + " not supported.");
         }

@@ -25,6 +25,7 @@ import org.junit.Test;
 @Ignore
 public class DropboxSimpleComponentTest extends CamelTestSupport {
 
+    @Ignore
     @Test
     public void testDropbox() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:result");
