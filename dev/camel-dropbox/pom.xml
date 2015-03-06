@@ -75,8 +75,13 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
-
+				<!-- bnd tool generates Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.6))", 
+					which expresses the base JRE requirement of the bundle. However, this seems 
+					to be outdated. -->
 				<configuration>
+					<instructions>
+						<_noee>true</_noee>
+					</instructions>
 					<excludeDependencies>true</excludeDependencies>
 				</configuration>
 			</plugin>
