@@ -31,7 +31,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.dropbox.component.configuration.ProxyConfiguration;
 import org.apache.camel.dropbox.component.configuration.SecurityConfiguration;
-import org.apache.camel.dropbox.registry.CamelRegistrySupportApi;
 import org.apache.camel.dropbox.utils.DropboxApp;
 import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultPollingEndpoint;
@@ -51,6 +50,7 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
     private transient Logger logger = LoggerFactory.getLogger(DropboxEndpoint.class);
 
     private static final String MAGIC_STATE = "X0Y32";
+    private static final String DATASOURCE = "datasource";
 
     private DropboxComponent component;
 
@@ -92,7 +92,7 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
     protected void doStart() throws Exception {
         super.doStart();
         setDataSource(this.component.getCamelContext().getRegistry()
-                .lookupByNameAndType(CamelRegistrySupportApi.DATASOURCE, DataSource.class));
+                .lookupByNameAndType(DATASOURCE, DataSource.class));
 
         final Connection connection = getDataSource().getConnection();
 
