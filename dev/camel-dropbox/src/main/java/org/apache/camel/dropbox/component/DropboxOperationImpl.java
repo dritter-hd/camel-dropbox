@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.dropbox.component.DropboxConsumerOperation.DropboxOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
@@ -22,6 +24,8 @@ import com.dropbox.core.DbxWriteMode;
 import com.dropbox.core.util.Maybe;
 
 public class DropboxOperationImpl {
+    private Logger logger = LoggerFactory.getLogger(DropboxOperationImpl.class);
+
     private final Map<DropboxOperations, DropboxConsumerOperation> consumerOperation = new HashMap<DropboxOperations, DropboxConsumerOperation>();
     private final Map<DropboxOperations, DropboxProducerOperation> producerOperation = new HashMap<DropboxOperations, DropboxProducerOperation>();
 
@@ -55,13 +59,13 @@ public class DropboxOperationImpl {
     private DropboxConsumerOperation getConsumerGet() {
         return new DropboxConsumerOperation() {
             private String prevFolderHash = "1D";
-            
+
             @Override
             public List<Exchange> execute() throws DbxException, IOException {
                 final List<Exchange> exchanges = new ArrayList<Exchange>();
 
                 final String path = endpoint.getPath();
-                final Maybe<WithChildren> meta = client.getMetadataWithChildrenIfChanged(path, prevFolderHash);
+                final Maybe<WithChildren> meta = client.getMetadataWithChildrenIfChanged(path, handleNull(prevFolderHash));
                 if (meta.isNothing()) {
                     return Collections.<Exchange> emptyList();
                 }
@@ -77,6 +81,10 @@ public class DropboxOperationImpl {
 
                 exchanges.add(exchange);
                 return exchanges;
+            }
+
+            private String handleNull(final String prevFolderHash) {
+                return prevFolderHash == null ? "1D" : prevFolderHash;
             }
         };
     }
@@ -136,11 +144,19 @@ public class DropboxOperationImpl {
 
             @Override
             public void execute(Exchange exchange) throws DbxException, IOException {
-                final ByteArrayOutputStream baos = exchange.getIn().getBody(ByteArrayOutputStream.class);
-                final byte[] byteArray = baos.toByteArray();
-                final ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
-                final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
-                exchange.getIn().setBody(upload(byteArray.length, bais, fileName));
+                final String rawBody = exchange.getIn().getBody(String.class);
+
+                if (rawBody != null) {
+                    final String body = rawBody;
+                    final ByteArrayInputStream bais = new ByteArrayInputStream(body.getBytes());
+                    exchange.getIn().setBody(upload(body.getBytes().length, bais, "fileFromString.txt"));
+                } else {
+                    final ByteArrayOutputStream baos = exchange.getIn().getBody(ByteArrayOutputStream.class);
+                    final byte[] byteArray = baos.toByteArray();
+                    final ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
+                    final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
+                    exchange.getIn().setBody(upload(byteArray.length, bais, fileName));
+                }
             }
         };
     }

@@ -16,13 +16,22 @@
  */
 package org.apache.camel.dropbox.component;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.dropbox.component.configuration.ProxyConfiguration;
 import org.apache.camel.dropbox.component.configuration.SecurityConfiguration;
+import org.apache.camel.dropbox.registry.CamelRegistrySupportApi;
 import org.apache.camel.dropbox.utils.DropboxApp;
 import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.DefaultPollingEndpoint;
@@ -31,18 +40,19 @@ import org.apache.camel.spi.UriParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxException;
 
 /**
  * Represents a www.dropbox.com Camel endpoint.
  */
 @UriEndpoint(scheme = "dropbox")
 public class DropboxEndpoint extends DefaultPollingEndpoint {
-    private DropboxComponent component;
-
     private transient Logger logger = LoggerFactory.getLogger(DropboxEndpoint.class);
+
+    private static final String MAGIC_STATE = "X0Y32";
+
+    private DropboxComponent component;
 
     @UriParam
     private String path;
@@ -53,12 +63,13 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
 
     @UriParam
     private SecurityConfiguration securityConfig = new SecurityConfiguration();
-    
+
     @UriParam
     private ProxyConfiguration proxyConfig = new ProxyConfiguration();
-    
+
     private DbxClient client;
 
+    private DataSource dataSource;
 
     public DropboxEndpoint() {
     }
@@ -75,6 +86,42 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
     public DropboxEndpoint(final String uri, final String remaining, final DropboxComponent dropboxComponent) throws URISyntaxException {
         this(uri, dropboxComponent);
         this.setMethod(remaining);
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
+        setDataSource(this.component.getCamelContext().getRegistry()
+                .lookupByNameAndType(CamelRegistrySupportApi.DATASOURCE, DataSource.class));
+
+        final Connection connection = getDataSource().getConnection();
+
+        final String tableName = "dropbox";
+        try {
+            final String sql = String.format("CREATE TABLE %s (hash VARCHAR(255))", tableName);
+            final PreparedStatement prepareStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS);
+            prepareStatement.execute();
+        } catch (SQLException e) {
+            if (tableAlreadyExists(e)) {
+                logger.info("Table " + tableName + " already exists. No need to recreate");
+            } else {
+                logger.error(e.getMessage() + " : " + e.getStackTrace());
+            }
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
+    private static boolean tableAlreadyExists(SQLException e) {
+        boolean exists;
+        if (e.getSQLState().equals(MAGIC_STATE)) {
+            exists = true;
+        } else {
+            exists = false;
+        }
+        return exists;
     }
 
     public Producer createProducer() throws Exception {
@@ -154,7 +201,7 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
     public void setProxyHost(String proxyHost) {
         proxyConfig.setProxyHost(proxyHost);
     }
-    
+
     protected DbxClient getDropboxClient() {
         if (null != client) {
             final DropboxAppConfiguration appConfig = new DropboxAppConfiguration(this.getAppKey(), this.getAppSecret(),
@@ -172,5 +219,13 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
             }
         }
         return client;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    private void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }

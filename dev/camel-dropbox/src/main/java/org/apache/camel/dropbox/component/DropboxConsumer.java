@@ -21,6 +21,7 @@ import com.dropbox.core.DbxException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.dropbox.component.DropboxConsumerOperation.DropboxOperations;
+import org.apache.camel.dropbox.registry.CamelRegistrySupportApi;
 import org.apache.camel.dropbox.utils.DropboxApp;
 import org.apache.camel.dropbox.utils.DropboxAppConfiguration;
 import org.apache.camel.impl.ScheduledPollConsumer;
@@ -29,7 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 /**
  * The dropbox.com consumer.
