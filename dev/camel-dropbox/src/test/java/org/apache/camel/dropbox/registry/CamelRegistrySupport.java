@@ -3,6 +3,7 @@ package org.apache.camel.dropbox.registry;
 import javax.sql.DataSource;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.dropbox.component.registry.CamelRegistrySupportApi;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.impl.PropertyPlaceholderDelegateRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
