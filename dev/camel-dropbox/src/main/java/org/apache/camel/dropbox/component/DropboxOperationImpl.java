@@ -70,7 +70,7 @@ public class DropboxOperationImpl {
                     return Collections.<Exchange> emptyList();
                 }
                 prevFolderHash = meta.getJust().hash;
-                
+
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 client.getFile(path, null, baos);
 
@@ -166,13 +166,18 @@ public class DropboxOperationImpl {
             @Override
             public void execute(final Exchange exchange) throws DbxException, IOException {
                 final List<DbxEntry> body = (List<DbxEntry>) exchange.getIn().getBody();
-                final DbxEntry dbxEntry = body.get(0);
-                endpoint.setPath(dbxEntry.path);
-                final String path = dbxEntry.path;
 
+                String path = null;
+                if (body != null) {
+                    final DbxEntry dbxEntry = body.get(0);
+                    endpoint.setPath(dbxEntry.path);
+                    path = dbxEntry.path;
+                } else {
+                    path = endpoint.getPath();
+                }
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 client.getFile(path, null, baos);
-
+                
                 final String[] pathArray = path.split("/");
                 exchange.getIn().setHeader(Exchange.FILE_NAME, pathArray[pathArray.length - 1]);
                 exchange.getIn().setBody(baos);

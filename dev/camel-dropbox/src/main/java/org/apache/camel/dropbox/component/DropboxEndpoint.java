@@ -91,25 +91,28 @@ public class DropboxEndpoint extends DefaultPollingEndpoint {
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        setDataSource(this.component.getCamelContext().getRegistry()
-                .lookupByNameAndType(DATASOURCE, DataSource.class));
+        setDataSource(this.component.getCamelContext().getRegistry().lookupByNameAndType(DATASOURCE, DataSource.class));
 
-        final Connection connection = getDataSource().getConnection();
+        final DataSource ds = getDataSource();
 
-        final String tableName = "dropbox";
-        try {
-            final String sql = String.format("CREATE TABLE %s (hash VARCHAR(255))", tableName);
-            final PreparedStatement prepareStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS);
-            prepareStatement.execute();
-        } catch (SQLException e) {
-            if (tableAlreadyExists(e)) {
-                logger.info("Table " + tableName + " already exists. No need to recreate");
-            } else {
-                logger.error(e.getMessage() + " : " + e.getStackTrace());
-            }
-        } finally {
-            if (connection != null) {
-                connection.close();
+        if (ds != null) {
+            final Connection connection = ds.getConnection();
+
+            final String tableName = "dropbox";
+            try {
+                final String sql = String.format("CREATE TABLE %s (hash VARCHAR(255))", tableName);
+                final PreparedStatement prepareStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS);
+                prepareStatement.execute();
+            } catch (SQLException e) {
+                if (tableAlreadyExists(e)) {
+                    logger.info("Table " + tableName + " already exists. No need to recreate");
+                } else {
+                    logger.error(e.getMessage() + " : " + e.getStackTrace());
+                }
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
             }
         }
     }
