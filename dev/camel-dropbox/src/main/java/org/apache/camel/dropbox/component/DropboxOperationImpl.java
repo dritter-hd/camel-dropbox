@@ -163,15 +163,8 @@ public class DropboxOperationImpl {
 
     private DropboxProducerOperation getProducerGet() {
         return new DropboxProducerOperation() {
-
             @Override
             public void execute(final Exchange exchange) throws DbxException, IOException {
-                final String searchHeader = exchange.getIn().getHeader("searchResult", String.class);
-
-                if (null == searchHeader) {
-                    throw new IllegalArgumentException();
-                }
-
                 final List<DbxEntry> body = (List<DbxEntry>) exchange.getIn().getBody();
                 final DbxEntry dbxEntry = body.get(0);
                 endpoint.setPath(dbxEntry.path);
